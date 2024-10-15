@@ -11,27 +11,29 @@ namespace RPNames
         
         public override string Author { get; } = "Timersky, Original plugin by: Babyboucher20 Maintained by Enes Batur";
         
-        public override Version Version { get; } = new(3, 0, 0);
+        public override Version Version { get; } = new(4, 0, 0);
         public override Version RequiredExiledVersion { get; } = new(8, 8, 0);
 
+        public static Plugin Instance;
+        
         private PlayerHandlers _handlers;
         
         public override void OnEnabled()
         {
-            _handlers = new(this);
+            Instance = this;
+            _handlers = new();
 
             Player.ChangingRole += _handlers.OnChangeRole;
-            Player.Died += _handlers.OnDeath;
             
             base.OnEnabled();
         }
 
         public override void OnDisabled()
         {
-            Player.Died -= _handlers.OnDeath;
             Player.ChangingRole -= _handlers.OnChangeRole;
 
             _handlers = null;
+            Instance = null;
             
             base.OnDisabled();
         }

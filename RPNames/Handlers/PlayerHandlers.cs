@@ -1,195 +1,89 @@
-﻿using Exiled.API.Extensions;
-using Exiled.API.Features;
-using PlayerRoles;
+﻿using PlayerRoles;
 using Exiled.Events.EventArgs.Player;
 using Random = UnityEngine.Random;
 
 namespace RPNames.Handlers
 {
-    public class PlayerHandlers
+    internal class PlayerHandlers
     {
-        private Plugin plugin;
-
-        public PlayerHandlers(Plugin _plugin) => plugin = _plugin;
-        
         public void OnChangeRole(ChangingRoleEventArgs ev)
         {
-            int randnumber = Random.Range(1000, 9999);
+            if (ev.NewRole == RoleTypeId.None || ev.NewRole == null || ev.Player == null) return;
             
-            if (ev.NewRole == RoleTypeId.Tutorial)
+            string name = "";
+
+            if (Plugin.Instance.Config.ShowId)
             {
-                if (plugin.Config.TutorialNick)
-                {
-                    ev.Player.DisplayNickname = null; 
-                    return;
-                }
+                name = $"[{ev.Player.Id}] ";
             }
             
-            if (ev.NewRole == RoleTypeId.Scp0492 && plugin.Config.ZombieNames)
+            switch (ev.NewRole)
             {
-                ev.Player.DisplayNickname = null;
-                if (plugin.Config.ShowNick)
-                {
-                    ev.Player.ShowHint(ev.Player.DisplayNickname);
-                }
-                return;
-            }
-            
-            if (PlayerRolesUtils.GetTeam(ev.NewRole) != Team.SCPs && plugin.Config.ClassTitles.ContainsKey(ev.NewRole))
-            {
-                if (plugin.Config.randomnames && ev.NewRole != RoleTypeId.ClassD && plugin.Config.DboisSetting)
-                {
-                    ev.Player.DisplayNickname = $"[{ev.Player.Id}] {plugin.Config.HumanFirstNames.GetRandomValue()} {plugin.Config.HumanSecondNames.GetRandomValue()}";
-                    
-                    if (plugin.Config.ShowRealName)
-                    {
-                        ev.Player.DisplayNickname = $"[{ev.Player.Id}] {plugin.Config.HumanFirstNames.GetRandomValue()} {plugin.Config.HumanSecondNames.GetRandomValue()} ({ev.Player.Nickname})";
-                    }
-                    
-                    if (plugin.Config.ShowNick)
-                    {
-                        ev.Player.ShowHint(ev.Player.DisplayNickname);
-                    }
-                    
-                    return;
-                }
-                
-                if (plugin.Config.ShowRealName && ev.NewRole != RoleTypeId.ClassD && plugin.Config.ShowRealName)
-                { 
-                    ev.Player.DisplayNickname = $"[{ev.Player.Id}] {plugin.Config.ClassTitles[ev.NewRole]} {plugin.Config.HumanFirstNames.GetRandomValue()} {plugin.Config.HumanSecondNames.GetRandomValue()} ({ev.Player.Nickname})";
-                    
-                    if (plugin.Config.ShowNick)
-                    {
-                        ev.Player.ShowHint(ev.Player.DisplayNickname);
-                    }
-                    
-                    return;
-                }
-                
-                ev.Player.DisplayNickname = $"[{ev.Player.Id}] {plugin.Config.ClassTitles[ev.NewRole]} {plugin.Config.HumanFirstNames.GetRandomValue()} {plugin.Config.HumanSecondNames.GetRandomValue()}";
-                   
-                if (plugin.Config.ShowNick)
-                {
-                    ev.Player.ShowHint(ev.Player.DisplayNickname);
-                }
-                
-                if (PlayerRolesUtils.GetTeam(ev.NewRole) is Team.FoundationForces)
-                {
-                    if (ev.NewRole is RoleTypeId.FacilityGuard)
-                    {
-                        if (plugin.Config.DifferentNicknamesForGuard)
-                        {
-                            ev.Player.DisplayNickname = $"[{ev.Player.Id}] {plugin.Config.GuardNames.GetRandomValue()}";
-                    
-                            if (plugin.Config.ShowRealName)
-                            {
-                                ev.Player.DisplayNickname = $"[{ev.Player.Id}] {plugin.Config.GuardNames.GetRandomValue()} ({ev.Player.Nickname})";
-                            }
-                        }
-                        else
-                        {
-                            ev.Player.DisplayNickname = $"[{ev.Player.Id}] {plugin.Config.HumanFirstNames.GetRandomValue()} {plugin.Config.HumanSecondNames.GetRandomValue()}";
-                    
-                            if (plugin.Config.ShowRealName)
-                            {
-                                ev.Player.DisplayNickname = $"[{ev.Player.Id}] {plugin.Config.HumanFirstNames.GetRandomValue()} {plugin.Config.HumanSecondNames.GetRandomValue()} ({ev.Player.Nickname})";
-                            }
-                        }
-                    }
+                case RoleTypeId.Tutorial:
+                    if (Plugin.Instance.Config.TutorialNick)
+                        name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]}";
                     else
-                    {
-                        if (plugin.Config.DifferentNicknamesForMTF)
-                        {
-                            ev.Player.DisplayNickname = $"[{ev.Player.Id}] {plugin.Config.MTFNames.GetRandomValue()}";
-                    
-                            if (plugin.Config.ShowRealName)
-                            {
-                                ev.Player.DisplayNickname = $"[{ev.Player.Id}] {plugin.Config.MTFNames.GetRandomValue()} ({ev.Player.Nickname})";
-                            }
-                        }
-                        else
-                        {
-                            ev.Player.DisplayNickname = $"[{ev.Player.Id}] {plugin.Config.HumanFirstNames.GetRandomValue()} {plugin.Config.HumanSecondNames.GetRandomValue()}";
-                    
-                            if (plugin.Config.ShowRealName)
-                            {
-                                ev.Player.DisplayNickname = $"[{ev.Player.Id}] {plugin.Config.HumanFirstNames.GetRandomValue()} {plugin.Config.HumanSecondNames.GetRandomValue()} ({ev.Player.Nickname})";
-                            }
-                        }
-                    }
-                    
-                    if (plugin.Config.ShowNick)
-                    {
-                        ev.Player.ShowHint(ev.Player.DisplayNickname);
-                    }
-                }
+                        name += ev.Player.Nickname;
+                    break;
+                case RoleTypeId.Scientist: 
+                    name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.HumanFirstNames.RandomItem()} {Plugin.Instance.Config.HumanSecondNames.RandomItem()}"; 
+                    break;
+                case RoleTypeId.FacilityGuard:
+                    if (Plugin.Instance.Config.DifferentNicknamesForGuard)
+                        name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.MtfNames}";
+                    else
+                        name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.HumanFirstNames.RandomItem()} {Plugin.Instance.Config.HumanSecondNames.RandomItem()}";
+                    break;
+                case RoleTypeId.ClassD:
+                    if (Plugin.Instance.Config.DboisSetting)
+                        name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Random.Range(1000, 9999)}";
+                    else
+                        name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.HumanFirstNames.RandomItem()} {Plugin.Instance.Config.HumanSecondNames.RandomItem()}";
+                    break;
                 
-                if (ev.NewRole == RoleTypeId.ClassD && plugin.Config.DboisSetting)
-                {
-                    ev.Player.DisplayNickname = $"{$"{plugin.Config.ClassTitles[ev.NewRole]}"+randnumber}";
-                    
-                    if (plugin.Config.ShowRealName)
-                    {
-                        ev.Player.DisplayNickname = $"{$"{plugin.Config.ClassTitles[ev.NewRole]}"+randnumber} ({ev.Player.Nickname})";
-                    }
-                    
-                    if (plugin.Config.ShowNick)
-                    {
-                        ev.Player.ShowHint(ev.Player.DisplayNickname);
-                    }
-                }
+                case RoleTypeId.CustomRole:
+                case RoleTypeId.Overwatch:
+                case RoleTypeId.Spectator: 
+                    name = ev.Player.Nickname; 
+                    break;
+                
+                case RoleTypeId.NtfPrivate:
+                case RoleTypeId.NtfSergeant:
+                case RoleTypeId.NtfSpecialist:
+                case RoleTypeId.NtfCaptain:
+                    if (Plugin.Instance.Config.DifferentNicknamesForMtf)
+                        name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.MtfNames}";
+                    else
+                        name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.HumanFirstNames.RandomItem()} {Plugin.Instance.Config.HumanSecondNames.RandomItem()}";
+                    break;
+                
+                case RoleTypeId.Scp049:
+                case RoleTypeId.Scp0492:
+                case RoleTypeId.Scp079:
+                case RoleTypeId.Scp096:
+                case RoleTypeId.Scp106:
+                case RoleTypeId.Scp939:
+                case RoleTypeId.Scp173:
+                    if (Plugin.Instance.Config.scpSetting)
+                        name += Plugin.Instance.Config.ClassTitles[ev.NewRole];
+                    else
+                        name += "???";
+                    break;
+                
+                default: name += Plugin.Instance.Config.ClassTitles[ev.NewRole]; break;
             }
             
-            if (PlayerRolesUtils.GetTeam(ev.NewRole) == Team.SCPs && plugin.Config.ClassTitles.ContainsKey(ev.NewRole))
+            if (Plugin.Instance.Config.ShowRealName)
             {
-                if (!plugin.Config.scpSetting)
-                {
-                    if (plugin.Config.ShowRealName)
-                    { 
-                        ev.Player.DisplayNickname = $"[{ev.Player.Id}] {plugin.Config.ClassTitles[ev.NewRole]}{randnumber} ({ev.Player.Nickname})";
-                               
-                        if (plugin.Config.ShowNick)
-                        {
-                            ev.Player.ShowHint(ev.Player.DisplayNickname);
-                        }
-                        
-                        return;
-                    }
-                    
-                    ev.Player.DisplayNickname = $"[{ev.Player.Id}] {plugin.Config.ClassTitles[ev.NewRole]}{randnumber}";
-                           
-                    if (plugin.Config.ShowNick)
-                    {
-                        ev.Player.ShowHint(ev.Player.DisplayNickname);
-                    }
-                    
-                    return;
-                }
-                
-                if (plugin.Config.ShowRealName)
-                {
-                    ev.Player.DisplayNickname = $"[{ev.Player.Id}] {plugin.Config.ClassTitles[ev.NewRole]} ({ev.Player.Nickname})";
-                    
-                    if (plugin.Config.ShowNick)
-                    {
-                        ev.Player.ShowHint(ev.Player.DisplayNickname);
-                    }
-                    
-                    return;
-                }
-                
-                ev.Player.DisplayNickname = $"[{ev.Player.Id}] {plugin.Config.ClassTitles[ev.NewRole]}";
-                
-                if (plugin.Config.ShowNick)
-                {
-                    ev.Player.ShowHint(ev.Player.DisplayNickname);
-                }
+                name += $" ({ev.Player.Nickname})";
             }
-        }
-        
-        public void OnDeath(DiedEventArgs ev)
-        {
-            if (plugin.Config.DeathReset && ev.Player != null) ev.Player.DisplayNickname = null;
+            
+            ev.Player.DisplayNickname = name;
+            
+            if (Plugin.Instance.Config.ShowNick)
+            {
+                ev.Player.ShowHint(name);
+            }
         }
     }
 }
