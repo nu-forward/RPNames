@@ -1,18 +1,17 @@
 ﻿using System;
 using RPNames.Handlers;
-using Player = Exiled.Events.Handlers.Player;
+using Exiled.Events.Handlers;
 
 namespace RPNames
 {
     public class Plugin : Exiled.API.Features.Plugin<Config>
     {
-        public override string Name { get; } = "Rp Names";
-        public override string Prefix { get; } = "RP Names";
-        
-        public override string Author { get; } = "Timersky, Original plugin by: Babyboucher20 Maintained by Enes Batur";
-        
-        public override Version Version { get; } = new(4, 0, 0);
-        public override Version RequiredExiledVersion { get; } = new(8, 8, 0);
+        public override string Name => "Rp Names";
+        public override string Prefix => "rp_names";
+        public override string Author => "wexelsdev, Original plugin by: Babyboucher20 Maintained by Enes Batur";
+
+        public override Version Version { get; } = new(4, 1, 0);
+        public override Version RequiredExiledVersion { get; } = new(9, 5, 0);
 
         public static Plugin Instance;
         

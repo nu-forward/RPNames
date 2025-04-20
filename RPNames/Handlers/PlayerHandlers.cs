@@ -8,13 +8,13 @@ namespace RPNames.Handlers
     {
         public void OnChangeRole(ChangingRoleEventArgs ev)
         {
-            if (ev.NewRole == RoleTypeId.None || ev.NewRole == null || ev.Player == null) return;
+            if (ev.NewRole is RoleTypeId.None or RoleTypeId.Destroyed or RoleTypeId.Filmmaker || ev.Player == null) return;
             
             string name = "";
 
             if (Plugin.Instance.Config.ShowId)
             {
-                name = $"[{ev.Player.Id}] ";
+                name += $"[{ev.Player.Id}] ";
             }
             
             switch (ev.NewRole)
@@ -26,19 +26,19 @@ namespace RPNames.Handlers
                         name += ev.Player.Nickname;
                     break;
                 case RoleTypeId.Scientist: 
-                    name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.HumanFirstNames.RandomItem()} {Plugin.Instance.Config.HumanSecondNames.RandomItem()}"; 
+                    name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.HumanFirstNames.RandomItem()} {Plugin.Instance.Config.HumanLastNames.RandomItem()}"; 
                     break;
                 case RoleTypeId.FacilityGuard:
                     if (Plugin.Instance.Config.DifferentNicknamesForGuard)
                         name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.MtfNames}";
                     else
-                        name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.HumanFirstNames.RandomItem()} {Plugin.Instance.Config.HumanSecondNames.RandomItem()}";
+                        name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.HumanFirstNames.RandomItem()} {Plugin.Instance.Config.HumanLastNames.RandomItem()}";
                     break;
                 case RoleTypeId.ClassD:
                     if (Plugin.Instance.Config.DboisSetting)
                         name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Random.Range(1000, 9999)}";
                     else
-                        name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.HumanFirstNames.RandomItem()} {Plugin.Instance.Config.HumanSecondNames.RandomItem()}";
+                        name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.HumanFirstNames.RandomItem()} {Plugin.Instance.Config.HumanLastNames.RandomItem()}";
                     break;
                 
                 case RoleTypeId.CustomRole:
@@ -54,9 +54,10 @@ namespace RPNames.Handlers
                     if (Plugin.Instance.Config.DifferentNicknamesForMtf)
                         name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.MtfNames}";
                     else
-                        name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.HumanFirstNames.RandomItem()} {Plugin.Instance.Config.HumanSecondNames.RandomItem()}";
+                        name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.HumanFirstNames.RandomItem()} {Plugin.Instance.Config.HumanLastNames.RandomItem()}";
                     break;
                 
+                case RoleTypeId.Flamingo:
                 case RoleTypeId.Scp049:
                 case RoleTypeId.Scp0492:
                 case RoleTypeId.Scp079:
