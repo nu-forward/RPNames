@@ -52,7 +52,7 @@ namespace RPNames.Handlers
                 case RoleTypeId.NtfSpecialist:
                 case RoleTypeId.NtfCaptain:
                     if (Plugin.Instance.Config.DifferentNicknamesForMtf)
-                        name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.MtfNames}";
+                        name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.MtfNames.RandomItem()}";
                     else
                         name += $"{Plugin.Instance.Config.ClassTitles[ev.NewRole]} {Plugin.Instance.Config.HumanFirstNames.RandomItem()} {Plugin.Instance.Config.HumanLastNames.RandomItem()}";
                     break;
